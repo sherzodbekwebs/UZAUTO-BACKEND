@@ -1,0 +1,402 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 1. Admin (Login uchun)
+model Admin {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  role      String   @default("admin")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+// 2. Yangiliklar
+model News {
+  id        String   @id @default(uuid())
+  date      String
+  image     String?
+  views     Int      @default(0)
+  titleRu   String
+  titleUz   String?
+  titleEn   String?
+  contentRu String   @db.Text
+  contentUz String?  @db.Text
+  contentEn String?  @db.Text
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+// 3. Vakansiyalar
+model Vacancy {
+  id        String   @id @default(uuid())
+  category  String
+  type      String
+  titleRu   String
+  titleUz   String?
+  titleEn   String?
+  deptRu    String
+  deptUz    String?
+  deptEn    String?
+  locRu     String
+  locUz     String?
+  locEn     String?
+  reqUz     String[]
+  reqRu     String[]
+  reqEn     String[]
+  dutyUz    String[]
+  dutyRu    String[]
+  dutyEn    String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+// 4. Komplaens murojaatlari
+model ComplianceReport {
+  id          String   @id @default(uuid())
+  isAnonymous Boolean
+  name        String?
+  email       String?
+  subject     String
+  phone       String?
+  message     String
+  pageUrl     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+}
+
+// 5. Tarix
+model History {
+  id        String   @id @default(uuid())
+  sortOrder Int
+  year      String
+  image     String?
+  titleRu   String
+  titleUz   String?
+  titleEn   String?
+  descRu    String   @db.Text
+  descUz    String?  @db.Text
+  descEn    String?  @db.Text
+  isActive  Boolean  @default(true)
+  postedBy  String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+// 6. Birlashgan kompaniyalar
+model AffiliatedCompany {
+  id         String   @id @default(uuid())
+  logo       String?
+  phone1     String
+  phone2     String?
+  email      String
+  website    String?
+  googleMaps String?
+  titleRu    String
+  titleUz    String?
+  titleEn    String?
+  addressRu  String
+  addressUz  String?
+  addressEn  String?
+  descRu     String   @db.Text
+  descUz     String?  @db.Text
+  descEn     String?  @db.Text
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+}
+
+// 7. Slayder
+model Slider {
+  id        String   @id @default(uuid())
+  image     String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+// 8. 10 yillik Slayder
+model AnniversarySlider {
+  id        String   @id @default(uuid())
+  image     String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+// 9. Katalog
+model Catalog {
+  id        String   @id @default(uuid())
+  titleRu   String
+  titleUz   String?
+  titleEn   String?
+  fileUrl   String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+// 10. Dilerlar
+model Dealer {
+  id String @id @default(uuid())
+
+  categoryRu String
+  categoryUz String?
+  categoryEn String?
+
+  phone String
+
+  link String?
+
+  nameRu String
+  nameUz String?
+  nameEn String?
+
+  addressRu String
+  addressUz String?
+  addressEn String?
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 11. Rahbariyat
+model Management {
+  id          String   @id @default(uuid())
+  nameRu      String
+  nameUz      String?
+  nameEn      String?
+  positionRu  String
+  positionUz  String?
+  positionEn  String?
+  receptionRu String
+  receptionUz String?
+  receptionEn String?
+  phone       String
+  email       String
+  image       String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+}
+
+// 12. Hamkorlar (Many-to-Many bog'lanish uchun o'zgartirildi)
+model Partner {
+  id        String   @id @default(uuid())
+  name      String
+  logo      String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+// 13. Mijozlar
+model Client {
+  id        String   @id @default(uuid())
+  name      String
+  logo      String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+// 14. Menyular
+model Menu {
+  id        String   @id @default(uuid())
+  titleRu   String
+  titleUz   String?
+  titleEn   String?
+  link      String
+  parentKey String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+// 15. Sahifalar
+model Page {
+  id        String   @id @default(uuid())
+  slug      String   @unique
+  titleRu   String
+  titleUz   String?
+  titleEn   String?
+  contentRu String   @db.Text
+  contentUz String?  @db.Text
+  contentEn String?  @db.Text
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+// 16. Hujjatlar
+model Document {
+  id           String   @id @default(uuid())
+  category     String?
+  titleRu      String
+  titleUz      String?
+  titleEn      String?
+  fileUrl      String?
+  externalLink String?
+  order        Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
+}
+
+// 17. Sozlamalar
+model Setting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+// 18. Murojaatlar
+model Appeal {
+  id         String   @id @default(uuid())
+  fullName   String?
+  email      String?
+  subject    String
+  phone      String?
+  message    String   @db.Text
+  clientType String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+}
+
+// 19. CRM
+model CRM {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String
+  isCalled  Boolean  @default(false)
+  result    String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+// 20. Kategoriyalar
+model Category {
+  id        String    @id @default(uuid())
+  titleRu   String
+  titleUz   String?
+  titleEn   String?
+  icon      String?
+  order     Int       @default(0)
+  isActive  Boolean   @default(true)
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+}
+
+// 21. Brendlar
+model Brand {
+  id        String    @id @default(uuid())
+  name      String
+  logo      String?
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  products  Product[]
+}
+
+// 22. Afzalliklar (Many-to-Many bo'ladi)
+model Advantage {
+  id        String    @id @default(uuid())
+  titleRu   String
+  titleUz   String?
+  titleEn   String?
+  icon      String?
+  isActive  Boolean   @default(true)
+  products  Product[] @relation("ProductAdvantages")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+}
+
+// 23. Texnik tavsif bo'limlari (Dvigatel, Kabina va h.k.)
+model TechSection {
+  id        String        @id @default(uuid())
+  titleRu   String
+  titleUz   String?
+  titleEn   String?
+  icon      String?
+  isActive  Boolean       @default(true)
+  order     Int           @default(0)
+  specs     ProductSpec[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @default(now()) @updatedAt
+}
+
+// 24. Mahsulotning aniq texnik qiymatlari (Qatorlar)
+model ProductSpec {
+  id String @id @default(uuid())
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  sectionId String
+  section   TechSection @relation(fields: [sectionId], references: [id])
+
+  keyRu String
+  keyUz String?
+  keyEn String?
+
+  valRu String
+  valUz String?
+  valEn String?
+
+  order Int @default(0)
+}
+
+// 25. Mahsulotlar (ASOSIY O'ZGARISH SHU YERDA)
+model Product {
+  id String @id @default(uuid())
+
+  titleRu   String
+  titleUz   String?
+  titleEn   String?
+  contentRu String  @db.Text
+  contentUz String? @db.Text
+  contentEn String? @db.Text
+
+  price        String?
+  qrCodeNumber String?
+
+  image       String
+  bannerImage String?
+  gallery     String[]
+
+  order    Int     @default(0)
+  isActive Boolean @default(true)
+  inStock  Boolean @default(true)
+
+  // RELATIONS (JSON o'rniga Table-lar)
+  advantages Advantage[]   @relation("ProductAdvantages")
+  techSpecs  ProductSpec[]
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  brandId String
+  brand   Brand  @relation(fields: [brandId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
