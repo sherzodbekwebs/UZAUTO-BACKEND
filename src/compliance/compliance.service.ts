@@ -3,7 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ComplianceService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async findAll() {
     // 🛡️ DIQQAT: Prisma sxemangizda model nomi 'complianceReport'
@@ -18,6 +18,21 @@ export class ComplianceService {
     });
     if (!report) throw new NotFoundException('Hisobot topilmadi');
     return report;
+  }
+
+  // compliance.service.ts
+  async create(data: any) {
+    return this.prisma.complianceReport.create({
+      data: {
+        isAnonymous: data.isAnonymous,
+        name: data.name || null,
+        email: data.email || null,
+        subject: data.subject,
+        phone: data.phone || null,
+        message: data.message,
+        pageUrl: data.pageUrl || null, // <--- Shuni ham qo'shing
+      },
+    });
   }
 
   async remove(id: string) {

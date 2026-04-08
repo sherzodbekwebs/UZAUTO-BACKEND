@@ -28,6 +28,7 @@ import { join } from 'path';
 import { AdminsModule } from './admins/admins.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ComplianceModule } from './compliance/compliance.module';
+import { TechEquipmentModule } from './tech-equipment/tech-equipment.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { ComplianceModule } from './compliance/compliance.module';
     DealersModule,
     AffiliatedModule,
     BrandsModule,
+    TechEquipmentModule,
     CrmModule,
     MenusModule,
     PagesModule,

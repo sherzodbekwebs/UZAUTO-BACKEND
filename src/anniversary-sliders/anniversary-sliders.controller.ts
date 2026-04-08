@@ -1,6 +1,6 @@
-import { 
-  Controller, Get, Post, Body, Param, Delete, Patch, 
-  UseInterceptors, UploadedFile, UseGuards, BadRequestException 
+import {
+  Controller, Get, Post, Body, Param, Delete, Patch,
+  UseInterceptors, UploadedFile, UseGuards, BadRequestException
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
@@ -10,7 +10,7 @@ import { AnniversarySlidersService } from './anniversary-sliders.service';
 
 @Controller('anniversary-sliders')
 export class AnniversarySlidersController {
-  constructor(private readonly anniversarySlidersService: AnniversarySlidersService) {}
+  constructor(private readonly anniversarySlidersService: AnniversarySlidersService) { }
 
   @Get() // Ochiq yo'l
   findAll() {
@@ -29,7 +29,7 @@ export class AnniversarySlidersController {
     }),
   }))
   create(
-    @Body() dto: { order: string; isActive: string }, 
+    @Body() dto: { order: string; isActive: string },
     @UploadedFile() file: Express.Multer.File
   ) {
     if (!file) throw new BadRequestException('Rasm yuklash majburiy!');
@@ -41,15 +41,45 @@ export class AnniversarySlidersController {
     });
   }
 
+
   @UseGuards(AuthGuard('jwt'))
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: any) {
-    if (dto.order) dto.order = parseInt(dto.order);
-    if (dto.isActive !== undefined) {
-        dto.isActive = dto.isActive === 'true' || dto.isActive === true;
+  @Patch(':id') // Tahrirlash uchun PATCH
+  @UseInterceptors(FileInterceptor('image', {
+    storage: diskStorage({
+      destination: './uploads/anniversary',
+      filename: (req, file, cb) => {
+        const uniqueName = Date.now() + extname(file.originalname);
+        cb(null, uniqueName);
+      },
+    }),
+  }))
+  update(
+    @Param('id') id: string,
+    @Body() dto: { order: string; isActive: string },
+    @UploadedFile() file: Express.Multer.File
+  ) {
+    const updateData: any = {
+      order: parseInt(dto.order),
+      isActive: dto.isActive === 'true' || (dto.isActive as any) === true
+    };
+
+    if (file) {
+      updateData.image = `/uploads/anniversary/${file.filename}`;
     }
-    return this.anniversarySlidersService.update(id, dto);
+
+    return this.anniversarySlidersService.update(id, updateData);
   }
+
+
+  // @UseGuards(AuthGuard('jwt'))
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() dto: any) {
+  //   if (dto.order) dto.order = parseInt(dto.order);
+  //   if (dto.isActive !== undefined) {
+  //       dto.isActive = dto.isActive === 'true' || dto.isActive === true;
+  //   }
+  //   return this.anniversarySlidersService.update(id, dto);
+  // }
 
   @UseGuards(AuthGuard('jwt'))
   @Delete(':id')

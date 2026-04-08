@@ -59,6 +59,22 @@ model Vacancy {
   updatedAt DateTime @default(now()) @updatedAt
 }
 
+model TechEquipment {
+  id        String  @id @default(uuid())
+  sectionRu String // Masalan: "Заготовительный участок"
+  sectionUz String? // Masalan: "Tayyorlov uchastkasi"
+  sectionEn String?
+
+  titleRu String
+  titleUz String?
+  titleEn String?
+
+  image     String // Rasm URL manzili
+  order     Int      @default(0) // Tartib raqami
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
 // 4. Komplaens murojaatlari
 model ComplianceReport {
   id          String   @id @default(uuid())
