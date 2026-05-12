@@ -45,7 +45,7 @@ export class DealersController {
   @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image', {
-    storage: diskStorage({
+    storage: diskStorage({      
       destination: './uploads/dealers',
       filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);

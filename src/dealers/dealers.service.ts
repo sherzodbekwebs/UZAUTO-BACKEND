@@ -19,7 +19,7 @@ export class DealersService {
     return dealer;
   }
 
-  async create(data: any) { 
+  async create(data: any) {
     return this.prisma.dealer.create({ data }); 
   }
 
