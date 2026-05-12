@@ -6,29 +6,34 @@ import helmet from 'helmet';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.use(
-    helmet({
-      crossOriginResourcePolicy: false,
-    }),
-  );
-
+  // 1. CORS ni hamma narsadan (hatto Helmetdan ham) tepaga qo'ying
   app.enableCors({
     origin: [
       'https://uzautotrailer.uz',
       'https://www.uzautotrailer.uz',
       'https://api.uzautotrailer.uz',
-      'https://admin.uzautotrailer.uz', // <--- Buni qo'shing
-      'http://admin.uzautotrailer.uz',  // <--- SSL o'rniguncha bu ham kerak
+      'https://admin.uzautotrailer.uz',
+      'http://admin.uzautotrailer.uz',
       'http://localhost:5173',
       'http://localhost:3000',
-      'https://test.uzautotrailer.uz', // <--- Buni qo'shing
-      'http://test.uzautotrailer.uz',  // <--- SSL o'rniguncha bu ham bo'lsin
+      'https://test.uzautotrailer.uz',
+      'http://test.uzautotrailer.uz',
       'https://uzauto-front.vercel.app',
       'https://uzauto-front-i8t22gw1j-sherzodbekwebs-projects.vercel.app',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
+    // BU QATORNI QO'SHING: Brauzerga qaysi headerlarni yuborishga ruxsat berishini aytadi
+    allowedHeaders: 'Content-Type, Accept, Authorization, X-Requested-With, Apollo-Require-Preflight',
   });
+
+  // 2. Helmet sozlamalari
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: false,
+      crossOriginEmbedderPolicy: false,
+    }),
+  );
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
