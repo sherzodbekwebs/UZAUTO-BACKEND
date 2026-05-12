@@ -14,6 +14,7 @@ async function bootstrap() {
       'https://uzautotrailer.uz',
       'https://www.uzautotrailer.uz',
       'http://localhost:5173',
+      'https://uzauto-front.vercel.app'
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
