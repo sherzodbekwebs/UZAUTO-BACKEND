@@ -30,9 +30,9 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # Backendda deyarli hamma faylni yuklaymiz, lekin keraksizlarini 'exclude' qilamiz
           local-dir: ./
           server-dir: ./
+          # EXCLUDE qismini kuchaytiramiz, muammoli papkalarni chetlab o'tamiz
           exclude: |
             **/node_modules/**
             src/**
@@ -42,3 +42,8 @@ jobs:
             *.ts
             tsconfig.json
             nest-cli.json
+            README.md
+            .prettierrc
+            eslint.config.mjs
+            uploads/**
+            dist.zip
