@@ -32,18 +32,20 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
           server-dir: ./
-          # EXCLUDE qismini kuchaytiramiz, muammoli papkalarni chetlab o'tamiz
+          # EXCLUDE ro'yxatini aniqroq qilamiz
           exclude: |
             **/node_modules/**
+            uploads/**
             src/**
             test/**
             .git/**
             .github/**
+            .env
+            dist.zip
             *.ts
             tsconfig.json
+            tsconfig.build.json
             nest-cli.json
             README.md
             .prettierrc
             eslint.config.mjs
-            uploads/**
-            dist.zip
