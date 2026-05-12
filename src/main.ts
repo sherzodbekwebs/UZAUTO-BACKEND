@@ -8,19 +8,7 @@ async function bootstrap() {
 
   // 1. CORS ni hamma narsadan (hatto Helmetdan ham) tepaga qo'ying
   app.enableCors({
-    origin: [
-      'https://uzautotrailer.uz',
-      'https://www.uzautotrailer.uz',
-      'https://api.uzautotrailer.uz',
-      'https://admin.uzautotrailer.uz',
-      'http://admin.uzautotrailer.uz',
-      'http://localhost:5173',
-      'http://localhost:3000',
-      'https://test.uzautotrailer.uz',
-      'http://test.uzautotrailer.uz',
-      'https://uzauto-front.vercel.app',
-      'https://uzauto-front-i8t22gw1j-sherzodbekwebs-projects.vercel.app',
-    ],
+    origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
     // BU QATORNI QO'SHING: Brauzerga qaysi headerlarni yuborishga ruxsat berishini aytadi
