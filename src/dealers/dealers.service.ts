@@ -1,37 +1,37 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import * as fs from 'fs';
+import { join } from 'path';
 
 @Injectable()
 export class DealersService {
   constructor(private prisma: PrismaService) {}
 
-  // Barcha dilerlarni olish
   async findAll() {
     return this.prisma.dealer.findMany({ 
       orderBy: { createdAt: 'desc' } 
     });
   }
 
-  // Bitta dilerni ID bo'yicha olish (Edit uchun juda muhim)
   async findOne(id: string) {
     const dealer = await this.prisma.dealer.findUnique({ where: { id } });
     if (!dealer) throw new NotFoundException('Diler topilmadi');
     return dealer;
   }
 
-  // Yangi diler qo'shish
   async create(data: any) { 
-    return this.prisma.dealer.create({ 
-      data 
-    }); 
+    return this.prisma.dealer.create({ data }); 
   }
 
-  // Diler ma'lumotlarini yangilash
   async update(id: string, data: any) {
-    // Avval borligini tekshiramiz
-    await this.findOne(id);
+    const oldDealer = await this.findOne(id);
     
-    // Bazaga o'zgarmas maydonlar (id, vaqtlar) yuborilmasligi uchun tozalaymiz
+    // Agar yangi rasm yuklansa, eskisini serverdan o'chirib yuboramiz
+    if (data.image && oldDealer.image && oldDealer.image !== data.image) {
+      const oldPath = join(process.cwd(), oldDealer.image);
+      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+    }
+
     const { id: _, createdAt, updatedAt, ...updateBody } = data;
 
     return this.prisma.dealer.update({ 
@@ -40,9 +40,15 @@ export class DealersService {
     });
   }
 
-  // Diler o'chirish
   async remove(id: string) {
-    await this.findOne(id);
+    const dealer = await this.findOne(id);
+
+    // Diler o'chayotganda rasmini ham serverdan o'chiramiz
+    if (dealer.image) {
+      const path = join(process.cwd(), dealer.image);
+      if (fs.existsSync(path)) fs.unlinkSync(path);
+    }
+
     return this.prisma.dealer.delete({ where: { id } });
   }
 }

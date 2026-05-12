@@ -172,8 +172,8 @@ model Dealer {
   categoryEn String?
 
   phone String
-
-  link String?
+  link  String?
+  image String? // <--- Yangi qo'shilgan qator (logo uchun optional string)
 
   nameRu String
   nameUz String?
