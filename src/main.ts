@@ -3,19 +3,23 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
 
+// src/main.ts
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // 1. CORS ni hamma narsadan (hatto Helmetdan ham) tepaga qo'ying
   app.enableCors({
-    origin: '*',
+    origin: [
+      'https://admin.uzautotrailer.uz',
+      'https://api.uzautotrailer.uz',
+      'https://uzautotrailer.uz',
+      'https://www.uzautotrailer.uz',
+      'http://localhost:5173',
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
-    // BU QATORNI QO'SHING: Brauzerga qaysi headerlarni yuborishga ruxsat berishini aytadi
-    allowedHeaders: 'Content-Type, Accept, Authorization, X-Requested-With, Apollo-Require-Preflight',
+    allowedHeaders: 'Content-Type, Accept, Authorization, X-Requested-With',
   });
 
-  // 2. Helmet sozlamalari
   app.use(
     helmet({
       crossOriginResourcePolicy: false,
@@ -25,7 +29,5 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
-
-  console.log(`Backend is running on port: ${port}`);
 }
 bootstrap();
