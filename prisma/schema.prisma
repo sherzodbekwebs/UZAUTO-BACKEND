@@ -7,6 +7,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// amoCRM ulanish tokenlari
+model AmoToken {
+  id           Int      @id @default(1)
+  accessToken  String   @db.Text
+  refreshToken String   @db.Text
+  updatedAt    DateTime @updatedAt
+}
+
+// Saytdagi mijoz va amoCRM chatini bog'lash
+model AmoChatSession {
+  id           String   @id @default(uuid())
+  socketId     String   @unique
+  amoChatId    String // amoCRM tomonidan berilgan Chat ID
+  amoContactId Int? // amoCRM dagi Kontakt ID
+  createdAt    DateTime @default(now())
+}
+
 // 1. Admin (Login uchun)
 model Admin {
   id        String   @id @default(uuid())

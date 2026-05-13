@@ -29,6 +29,7 @@ import { AdminsModule } from './admins/admins.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ComplianceModule } from './compliance/compliance.module';
 import { TechEquipmentModule } from './tech-equipment/tech-equipment.module';
+import { AmocrmModule } from './amocrm/amocrm.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { TechEquipmentModule } from './tech-equipment/tech-equipment.module';
     CategoriesModule,
     AdvantagesModule,
     SettingsModule,
+    AmocrmModule,
     ClientsModule,
     ComplianceModule,
     TechSectionsModule,
