@@ -7,6 +7,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import * as fs from 'fs';
 
 @Controller('dealers')
 export class DealersController {
@@ -26,18 +27,27 @@ export class DealersController {
   @Post()
   @UseInterceptors(FileInterceptor('image', {
     storage: diskStorage({
-      destination: './uploads/dealers', // Rasmlar saqlanadigan joy
+      destination: (req, file, cb) => {
+        const path = './uploads/dealers';
+        // Papka mavjudligini tekshirish va yaratish
+        if (!fs.existsSync(path)) {
+          fs.mkdirSync(path, { recursive: true });
+        }
+        cb(null, path);
+      },
       filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
         cb(null, `dealer-${uniqueSuffix}${extname(file.originalname)}`);
       },
     }),
   }))
-  create(@Body() dto: any, @UploadedFile() file: Express.Multer.File) {
+  async create(@Body() dto: any, @UploadedFile() file: Express.Multer.File) {
     const data = {
       ...dto,
-      isActive: dto.isActive === 'false' || dto.isActive === false ? false : true,
-      image: file ? `/uploads/dealers/${file.filename}` : null, // Rasm yo'li
+      // isActive maydonini har doim boolean qilib yuboramiz
+      isActive: String(dto.isActive) === 'true',
+      // Rasm yo'lini saqlash
+      image: file ? `/uploads/dealers/${file.filename}` : null,
     };
     return this.dealersService.create(data);
   }
@@ -46,24 +56,32 @@ export class DealersController {
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image', {
     storage: diskStorage({      
-      destination: './uploads/dealers',
+      destination: (req, file, cb) => {
+        const path = './uploads/dealers';
+        if (!fs.existsSync(path)) {
+          fs.mkdirSync(path, { recursive: true });
+        }
+        cb(null, path);
+      },
       filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
         cb(null, `dealer-${uniqueSuffix}${extname(file.originalname)}`);
       },
     }),
   }))
-  update(
+  async update(
     @Param('id') id: string, 
     @Body() dto: any, 
     @UploadedFile() file: Express.Multer.File
   ) {
     const updateData = { ...dto };
 
+    // Boolean turiga aniq o'tkazish
     if (dto.isActive !== undefined) {
-      updateData.isActive = dto.isActive === 'true' || dto.isActive === true;
+      updateData.isActive = String(dto.isActive) === 'true';
     }
 
+    // Agar yangi rasm yuklangan bo'lsa, yo'lni yangilaymiz
     if (file) {
       updateData.image = `/uploads/dealers/${file.filename}`;
     }

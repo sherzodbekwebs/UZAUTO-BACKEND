@@ -1,15 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as fs from 'fs';
 import { join } from 'path';
 
 @Injectable()
 export class DealersService {
-  constructor(private prisma: PrismaService) {}
+  private readonly logger = new Logger(DealersService.name);
+
+  constructor(private prisma: PrismaService) { }
 
   async findAll() {
-    return this.prisma.dealer.findMany({ 
-      orderBy: { createdAt: 'desc' } 
+    return this.prisma.dealer.findMany({
+      orderBy: { createdAt: 'desc' }
     });
   }
 
@@ -20,23 +22,23 @@ export class DealersService {
   }
 
   async create(data: any) {
-    return this.prisma.dealer.create({ data }); 
+    return this.prisma.dealer.create({ data });
   }
 
   async update(id: string, data: any) {
     const oldDealer = await this.findOne(id);
-    
-    // Agar yangi rasm yuklansa, eskisini serverdan o'chirib yuboramiz
+
+    // Agar yangi rasm yuklansa, eskisini serverdan o'chirishga harakat qilamiz
     if (data.image && oldDealer.image && oldDealer.image !== data.image) {
-      const oldPath = join(process.cwd(), oldDealer.image);
-      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      this.deleteFileSafe(oldDealer.image);
     }
 
+    // Bazaga o'zgarmas maydonlar yuborilmasligini ta'minlaymiz
     const { id: _, createdAt, updatedAt, ...updateBody } = data;
 
-    return this.prisma.dealer.update({ 
-      where: { id }, 
-      data: updateBody 
+    return this.prisma.dealer.update({
+      where: { id },
+      data: updateBody
     });
   }
 
@@ -45,10 +47,31 @@ export class DealersService {
 
     // Diler o'chayotganda rasmini ham serverdan o'chiramiz
     if (dealer.image) {
-      const path = join(process.cwd(), dealer.image);
-      if (fs.existsSync(path)) fs.unlinkSync(path);
+      this.deleteFileSafe(dealer.image);
     }
 
     return this.prisma.dealer.delete({ where: { id } });
+  }
+
+  /**
+   * Faylni xavfsiz o'chirish (Crash bo'lishini oldini oladi)
+   */
+  private deleteFileSafe(filePath: string) {
+    try {
+      // Yo'lni tozalash (agarda yo'l boshida / bo'lsa, join xato qilishi mumkin)
+      const cleanPath = filePath.startsWith('/') ? filePath.substring(1) : filePath;
+      const absolutePath = join(process.cwd(), cleanPath);
+
+      if (fs.existsSync(absolutePath)) {
+        fs.unlinkSync(absolutePath);
+        this.logger.log(`Fayl muvaffaqiyatli o'chirildi: ${absolutePath}`);
+      } else {
+        this.logger.warn(`Fayl topilmadi, o'chirish o'tkazib yuborildi: ${absolutePath}`);
+      }
+      // DealersService ichidagi catch blokini mana bunday o'zgartiring:
+
+    } catch (error: any) { // <-- : any qo'shildi
+      this.logger.error(`Faylni o'chirishda xatolik yuz berdi: ${error.message}`);
+    }
   }
 }
